@@ -39,6 +39,7 @@ import {
   SOCIAL_PLATFORMS,
 } from "../utils/socialUtils";
 import type { Database } from "../lib/supabase";
+import logo from "../assets/dbclogo.png";
 
 type BusinessCard = Database["public"]["Tables"]["business_cards"]["Row"];
 type SocialLink = Database["public"]["Tables"]["social_links"]["Row"];
@@ -593,12 +594,11 @@ export const AdminPanel: React.FC = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-4">
               {/* Logo */}
-              {/* <img
+              <img
                 src={logo}
                 alt="Digital Business Card Logo"
                 className="h-24 w-auto"
-              /> */}
-              <h1>Digital Business Card</h1>
+              />
               {formData.username && (
                 <a
                   href={`/c/${formData.username}`}
@@ -607,7 +607,7 @@ export const AdminPanel: React.FC = () => {
                   className="inline-flex items-center gap-2 px-2 py-2 text-sm bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors border-2 border-green-500 "
                 >
                   <Eye className="w-4 h-4" />
-                  View Live Card
+                  {/* View Live Card */}
                 </a>
               )}
             </div>
@@ -621,7 +621,7 @@ export const AdminPanel: React.FC = () => {
                 ) : (
                   <Copy className="w-4 h-4" />
                 )}
-                {copied ? "Copied!" : "Copy URL"}
+                {/* {copied ? "Copied!" : "Copy URL"} */}
               </button>
               <button
                 onClick={handleSave}
@@ -633,14 +633,14 @@ export const AdminPanel: React.FC = () => {
                 ) : (
                   <Save className="w-4 h-4" />
                 )}
-                {saving ? "Saving..." : "Save Changes"}
+                {/* {saving ? "Saving..." : "Save Changes"} */}
               </button>
               <button
                 onClick={handleSignOut}
-                className="inline-flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                className="inline-flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors border-2 border-gray-300 rounded-lg"
               >
                 <LogOut className="w-4 h-4" />
-                Sign Out
+                {/* Sign Out */}
               </button>
             </div>
           </div>
