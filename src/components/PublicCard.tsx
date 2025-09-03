@@ -780,7 +780,7 @@ export const PublicCard: React.FC = () => {
                               <img
                                 src={getVideoThumbnail(item.url)!}
                                 alt={item.title}
-                                className="w-full h-20 md:h-40 object-cover rounded-lg"
+                                className="w-full h-40 md:h-40 object-cover rounded-lg"
                               />
                             ) : (
                               <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
