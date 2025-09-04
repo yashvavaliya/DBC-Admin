@@ -39,7 +39,6 @@ import {
   SOCIAL_PLATFORMS,
 } from "../utils/socialUtils";
 import type { Database } from "../lib/supabase";
-import logo from "../assets/dbclogo.png";
 
 type BusinessCard = Database["public"]["Tables"]["business_cards"]["Row"];
 type SocialLink = Database["public"]["Tables"]["social_links"]["Row"];
@@ -595,7 +594,7 @@ export const AdminPanel: React.FC = () => {
             <div className="flex items-center gap-4">
               {/* Logo */}
               <img
-                src={logo}
+                src="https://github.com/yash131120/DBC_____logo/blob/main/dbclogo.png?raw=true"
                 alt="Digital Business Card Logo"
                 className="h-24 w-auto"
               />

@@ -90,7 +90,7 @@ export const AuthPage: React.FC = () => {
                   : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
               }`}
             >
-              ign In
+              Sign In
             </button>
             <button
               onClick={() => {
