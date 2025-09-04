@@ -57,10 +57,10 @@ export const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-[60vh] flex items-center justify-center p-2 md:p-4 w-full">
+      <div className="w-full max-w-xs md:max-w-md">
         {/* Header */}
-        <div className="text-center mb-8">
+  <div className="text-center mb-6 md:mb-8">
           {/* <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mb-4 shadow-lg">
             <CreditCard className="w-8 h-8 text-white" />
           </div> */}
@@ -75,16 +75,16 @@ export const AuthPage: React.FC = () => {
         </div>
 
         {/* Auth Form */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+  <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           {/* Tab Navigation */}
-          <div className="flex border-b border-gray-200">
+          <div className="flex border-b border-gray-200 text-xs md:text-sm">
             <button
               onClick={() => {
                 setMode("signin");
                 setError(null);
                 setFormData({ email: "", password: "" });
               }}
-              className={`flex-1 py-4 px-6 text-sm font-medium transition-all duration-200 ${
+              className={`flex-1 py-2 md:py-4 px-8 text-sm md:text-sm font-semibold transition-all duration-200 ${
                 mode === "signin"
                   ? "text-blue-600 bg-blue-50 border-b-2 border-blue-600"
                   : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
@@ -98,7 +98,7 @@ export const AuthPage: React.FC = () => {
                 setError(null);
                 setFormData({ email: "", password: "" });
               }}
-              className={`flex-1 py-4 px-6 text-sm font-medium transition-all duration-200 ${
+              className={`flex-1 py-2 md:py-4 px-8 text-sm md:text-sm font-semibold transition-all duration-200 ${
                 mode === "signup"
                   ? "text-blue-600 bg-blue-50 border-b-2 border-blue-600"
                   : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
@@ -109,7 +109,7 @@ export const AuthPage: React.FC = () => {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <form onSubmit={handleSubmit} className="p-4 md:p-6 space-y-3 md:space-y-4">
             {error && (
               <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
@@ -120,19 +120,19 @@ export const AuthPage: React.FC = () => {
             <div className="relative">
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-xs md:text-sm font-medium text-gray-700 mb-1"
               >
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
                 <input
                   type="email"
                   id="email"
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full pl-9 pr-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs md:text-base"
                   placeholder="Enter your email"
                   required
                 />
@@ -142,19 +142,19 @@ export const AuthPage: React.FC = () => {
             <div className="relative">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-xs md:text-sm font-medium text-gray-700 mb-1"
               >
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full pl-9 pr-10 md:pl-10 md:pr-12 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs md:text-base"
                   placeholder="Enter your password"
                   required
                   minLength={6}
@@ -162,12 +162,12 @@ export const AuthPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-2 md:right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                 >
                   {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
+                    <EyeOff className="w-4 h-4 md:w-5 md:h-5" />
                   ) : (
-                    <Eye className="w-5 h-5" />
+                    <Eye className="w-4 h-4 md:w-5 md:h-5" />
                   )}
                 </button>
               </div>
@@ -176,7 +176,7 @@ export const AuthPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 md:py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-xs md:text-base"
             >
               {loading ? (
                 <div className="flex items-center justify-center gap-2">
@@ -193,7 +193,7 @@ export const AuthPage: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-6 text-sm text-gray-500">
+  <div className="text-center mt-4 md:mt-6 text-xs md:text-sm text-gray-500">
           {mode === "signin" ? (
             <>
               Don't have an account?{" "}
