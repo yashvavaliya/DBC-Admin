@@ -102,15 +102,15 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
       {currentImageUrl ? (
         // Show current image with edit/remove options
-        <div className="relative group items-center justify-center ml-5">
+        <div className="relative group items-center justify-center ml-4 sm:ml-4">
           <img
             src={currentImageUrl}
             alt="Profile"
-            className="w-32 h-32 rounded-full object-cover border-4 border-gray-200 shadow-lg"
+            className="w-40 h-40 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-gray-200 shadow-lg"
           />
           
           {/* Overlay with actions */}
-          <div className="absolute inset-0 bg-black bg-opacity-50 w-32 h-32 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black bg-opacity-50 w-40 h-40 sm:w-36 sm:h-36 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
             <div className="flex gap-2">
               <button
                 onClick={() => fileInputRef.current?.click()}
@@ -142,7 +142,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onClick={() => fileInputRef.current?.click()}
-          className={`w-32 h-32 rounded-full border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 ${
+          className={`w-32 h-32 ml-4 rounded-full border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 ${
             dragOver ? 'border-blue-500 bg-blue-50' : ''
           } ${uploading ? 'pointer-events-none opacity-50' : ''}`}
         >

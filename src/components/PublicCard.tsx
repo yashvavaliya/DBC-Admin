@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import type { Database } from "../lib/supabase";
+import { getSocialIcon, SOCIAL_PLATFORM_COLORS } from "../utils/socialUtils";
 
 import html2canvas from "html2canvas";
 import { QRCodeSVG } from "qrcode.react";
@@ -695,30 +696,11 @@ export const PublicCard: React.FC = () => {
                 <h3 className="text-xl font-semibold mb-4" style={{ color: theme.text }}>
                   Get In Touch
                 </h3>
-                {/* Social Links */}
-                {/* {socialLinks.length > 0 && (
-                  <div className="flex gap-3 flex-wrap justify-center">
-                    {socialLinks.map((link) => {
-                      const Icon = SOCIAL_ICONS[link.platform] || Globe;
-                      return (
-                        <a
-                          key={link.id}
-                          href={link.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-200 shadow-lg"
-                          style={{ backgroundColor: theme.primary }}
-                          title={link.platform}
-                        >
-                          <Icon className="w-6 h-6 text-white" />
-                        </a>
-                      );
-                    })}
-                  </div>
-                )} */}
+               
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {socialLinks.map((link) => {
-                    const Icon = SOCIAL_ICONS[link.platform] || Globe;
+                  {socialLinks.map(link => {
+                    const Icon = getSocialIcon(link.platform);
+                    const color = SOCIAL_PLATFORM_COLORS[link.platform] || "#333";
                     return (
                       <a
                         key={link.id}
@@ -728,10 +710,10 @@ export const PublicCard: React.FC = () => {
                         className="flex items-center gap-2 p-3 rounded-lg transition-all duration-200 hover:bg-black hover:bg-opacity-10 hover:scale-105"
                       >
                         <div
-                          className="w-8 h-8 rounded-full flex items-center justify-center"
-                          style={{ backgroundColor: theme.primary }}
+                          className={`w-10 h-10 flex items-center justify-center rounded-full ${link.platform === "GitHub" ? "bg-gray-200" : ""}`}
+                          style={link.platform !== "GitHub" ? { background: color + "33" } : undefined}
                         >
-                          <Icon className="w-4 h-4 text-white" />
+                          <Icon className="text-2xl" color={color} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="text-xs font-medium truncate">

@@ -67,7 +67,7 @@ const HomePage = () => (
     <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-7xl gap-8 md:gap-12 relative z-10">
       {/* Left Column - Visual */}
       <div className="relative flex-1 flex items-center justify-center w-full md:w-auto">
-        <div className="relative w-full max-w-sm md:max-w-lg bg-white rounded-3xl shadow-2xl p-3 md:p-5 transform -rotate-6 hover:rotate-0 transition-transform duration-500">
+        <div className="relative w-full max-w-sm md:max-w-lg bg-white rounded-3xl shadow-2xl p-3 md:p-5 transform -rotate- hover:rotate-0 transition-transform duration-500">
           <div className="absolute -top-3 -left-4 md:-left-8 bg-yellow-400 text-yellow-900 px-3 md:px-4 py-2 rounded-full text-xs md:text-sm font-semibold shadow-md animate-bounce z-10">
             🚀 Stand Out Online
           </div>

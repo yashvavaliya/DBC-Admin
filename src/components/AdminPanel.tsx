@@ -24,6 +24,7 @@ import {
   Image as ImageIcon,
   MessageCircle,
   MapPin,
+  ArrowBigRight,
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
@@ -39,6 +40,7 @@ import {
   SOCIAL_PLATFORMS,
 } from "../utils/socialUtils";
 import type { Database } from "../lib/supabase";
+import { getSocialIcon, SOCIAL_PLATFORM_COLORS } from "../utils/socialUtils";
 
 type BusinessCard = Database["public"]["Tables"]["business_cards"]["Row"];
 type SocialLink = Database["public"]["Tables"]["social_links"]["Row"];
@@ -59,6 +61,8 @@ interface Review {
   rating: number;
   comment: string;
   created_at: string;
+  review_url: string;
+  title: string;
 }
 
 interface FormData {
@@ -142,10 +146,26 @@ const THEMES = [
 ];
 
 export const AdminPanel: React.FC = () => {
+  // Confetti celebration state
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [showCongrats, setShowCongrats] = useState(false);
+
+  // Confetti animation (simple canvas-based)
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (showConfetti) {
+      timeout = setTimeout(() => {
+        setShowConfetti(false);
+        setShowCongrats(false);
+      }, 7000); // Increased duration to 7 seconds
+    }
+    return () => clearTimeout(timeout);
+  }, [showConfetti]);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("basic");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [businessCard, setBusinessCard] = useState<BusinessCard | null>(null);
@@ -185,6 +205,7 @@ export const AdminPanel: React.FC = () => {
 
   useEffect(() => {
     if (user) {
+      setLoading(true);
       loadUserData();
     }
   }, [user]);
@@ -193,8 +214,6 @@ export const AdminPanel: React.FC = () => {
     if (!user) return;
 
     try {
-      setLoading(true);
-
       // Load profile
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
@@ -356,11 +375,11 @@ export const AdminPanel: React.FC = () => {
 
       // Profile update moved above
 
-      alert("Business card saved successfully!");
+      // Optionally, show a non-intrusive toast or silent feedback here
       await loadUserData(); // Reload data
     } catch (error) {
       console.error("Save error:", error);
-      alert("Failed to save business card. Please try again.");
+      // Optionally, show a non-intrusive error message here
     } finally {
       setSaving(false);
     }
@@ -585,8 +604,87 @@ export const AdminPanel: React.FC = () => {
     { id: "design", label: "Design", icon: Palette },
   ];
 
+  // ConfettiAnimation component
+  function ConfettiAnimation() {
+    const confettiColors = [
+      "#F59E0B", // Amber
+      "#3B82F6", // Blue
+      "#10B981", // Emerald
+      "#EC4899", // Pink
+      "#8B5CF6", // Violet
+      "#60A5FA", // Light Blue
+      "#DB2777", // Fuchsia
+      "#D97706", // Orange
+      "#7C3AED", // Purple
+      "#1E40AF", // Navy
+      "#F87171", // Red
+      "#34D399", // Green
+      "#FBBF24", // Yellow
+      "#A3E635", // Lime
+      "#F472B6", // Rose
+      "#38BDF8", // Sky
+      "#FDE68A", // Light Yellow
+      "#C026D3", // Deep Purple
+      "#F43F5E", // Deep Pink
+      "#22D3EE", // Cyan
+      "#EAB308", // Gold
+      "#BE185D", // Magenta
+      "#059669", // Teal
+      "#FACC15", // Sun
+    ];
+    // Show more pieces, smaller size
+    const confettiPieces = Array.from({ length: 600 }, (_, i) => i);
+    return (
+      <div className="fixed inset-0 z-50 pointer-events-none">
+        {confettiPieces.map((i: number) => {
+          const left = Math.random() * 100;
+          const delay = Math.random() * 1.5;
+          const duration = 2.5 + Math.random() * 1.5;
+          const size = 6 + Math.random() * 6; // 6–12px
+          const color =
+            confettiColors[Math.floor(Math.random() * confettiColors.length)];
+          const rotate = Math.random() * 360;
+          return (
+            <div
+              key={i}
+              style={{
+                left: `${left}%`,
+                width: size,
+                height: size,
+                backgroundColor: color,
+                top: 0,
+                borderRadius: 3,
+                position: "absolute",
+                animation: `confetti-fall ${duration}s ${delay}s linear forwards`,
+                transform: `rotate(${rotate}deg)`,
+              }}
+              className="confetti-piece"
+            ></div>
+          );
+        })}
+        <style>{`
+        @keyframes confetti-fall {
+          0% { opacity: 1; top: 0; }
+          80% { opacity: 1; }
+          100% { opacity: 0; top: 90vh; }
+        }
+        .confetti-piece {
+          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .animate-fade-in {
+          animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
+  <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40 transition-transform duration-300 translate-y-0">
         <div className="max-w-7xl mx-auto px-0 sm:px-4 lg:px-4">
@@ -598,52 +696,195 @@ export const AdminPanel: React.FC = () => {
                 alt="Digital Business Card Logo"
                 className="h-24 w-auto"
               />
-              {formData.username && (
-                <a
-                  href={`/c/${formData.username}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-2 py-2 text-sm bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors border-2 border-green-500 "
-                >
-                  <Eye className="w-4 h-4" />
-                  {/* View Live Card */}
-                </a>
-              )}
             </div>
-            <div className="flex items-center gap-4">
+            {/* Desktop Nav */}
+            <div className="hidden sm:flex items-center gap-4">
               <button
                 onClick={copyCardUrl}
-                className="inline-flex items-center gap-2 px-3 py-2 text-sm bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+                className="inline-flex items-center gap-2 px-3 py-2 text-sm bg-purple-50 text-purple-500 rounded-lg hover:bg-purple-500 hover:text-white transition-colors"
               >
                 {copied ? (
                   <Check className="w-4 h-4" />
                 ) : (
                   <Copy className="w-4 h-4" />
                 )}
-                {/* {copied ? "Copied!" : "Copy URL"} */}
+                {copied ? "Copied!" : "Copy URL"}
               </button>
               <button
-                onClick={handleSave}
+                onClick={async () => {
+                  await handleSave();
+                  setShowConfetti(true);
+                  setShowCongrats(true);
+                }}
                 disabled={saving}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed bg-yellow-50 text-yellow-500 rounded-lg font-medium hover:bg-yellow-500 hover:text-white transition-colors text-sm border-2 border-yellow-500"
               >
                 {saving ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <Save className="w-4 h-4" />
                 )}
-                {/* {saving ? "Saving..." : "Save Changes"} */}
+                {saving ? "Saving..." : "Save Changes"}
               </button>
               <button
                 onClick={handleSignOut}
                 className="inline-flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors border-2 border-gray-300 rounded-lg"
               >
                 <LogOut className="w-4 h-4" />
-                {/* Sign Out */}
+                Sign Out
+              </button>
+            </div>
+            {/* Mobile Nav Toggle */}
+            <div className="sm:hidden flex items-center">
+              <button
+                onClick={() => setMobileNavOpen(true)}
+                className="inline-flex items-center justify-center p-2 rounded-lg text-gray-600 hover:text-gray-900 focus:outline-none"
+                aria-label="Open menu"
+              >
+                {/* Hamburger Icon */}
+                <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="2" rx="1" fill="currentColor"/><rect x="4" y="11" width="16" height="2" rx="1" fill="currentColor"/><rect x="4" y="16" width="16" height="2" rx="1" fill="currentColor"/></svg>
               </button>
             </div>
           </div>
         </div>
+        {/* Mobile Nav Drawer/Modal */}
+        {mobileNavOpen && (
+          <div className="fixed inset-0 z-50 flex justify-center items-start">
+            <div className="bg-white rounded-2xl shadow-2xl w-80 mt-10 p-10 relative flex flex-col items-center" style={{boxShadow: '0 8px 32px rgba(0,0,0,0.18)'}}>
+              {/* <button
+                className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-2xl"
+                onClick={() => setMobileNavOpen(false)}
+                aria-label="Close"
+              >
+                &times;
+              </button> */}
+              <button
+                onClick={() => setMobileNavOpen(false)}
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-900 bg-white rounded-lg p-2 border border-gray-300"
+                aria-label="Close menu"
+              >
+                <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+              </button>
+              <div className="flex flex-col gap-4 ">
+                {formData.username && (
+                         <a
+                           href={`/c/${formData.username}`}
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           className="inline-flex items-center gap-2 px-5 py-4 text-base bg-green-50 text-green-500 rounded-xl hover:bg-green-500 hover:text-white transition-colors font-semibold border-2 border-green-500 shadow"
+                         >
+                           <Eye className="w-5 h-5" />
+                           View Live Card
+                         </a>
+                       )}
+                <button
+                  onClick={() => { copyCardUrl(); setMobileNavOpen(false); }}
+                  className="inline-flex items-center gap-2 px-5 py-4 text-base bg-purple-50 text-purple-500 rounded-xl hover:bg-purple-500 hover:text-white transition-colors font-semibold border-2 border-purple-500 shadow"
+                >
+                  {copied ? (
+                    <Check className="w-5 h-5" />
+                  ) : (
+                    <Copy className="w-5 h-5" />
+                  )}
+                  {copied ? "Copied!" : "Copy URL"}
+                </button>
+                <button
+                  onClick={async () => {
+                    await handleSave();
+                    setShowConfetti(true);
+                    setShowCongrats(true);
+                    setMobileNavOpen(false);
+                  }}
+                  disabled={saving}
+                  className="inline-flex items-center gap-2 px-5 py-4 text-base disabled:opacity-50 disabled:cursor-not-allowed bg-yellow-50 text-yellow-500 rounded-xl font-semibold hover:bg-yellow-500 hover:text-white transition-colors border-2 border-yellow-500 shadow"
+                >
+                  {saving ? (
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Save className="w-5 h-5" />
+                  )}
+                  {saving ? "Saving..." : "Save Changes"}
+                </button>
+                <button
+                  onClick={async () => { await handleSignOut(); setMobileNavOpen(false); }}
+                  className="inline-flex items-center gap-2 px-5 py-4 text-base text-gray-600 hover:text-gray-900 transition-colors border-2 border-gray-300 rounded-xl font-semibold shadow"
+                >
+                  <LogOut className="w-5 h-5" />
+                  Sign Out
+                </button>
+              </div>
+            </div>
+            <style>{`
+              .animate-fade-in {
+                animation: fadeInModal 0.25s cubic-bezier(.23,1.02,.53,.97);
+              }
+              @keyframes fadeInModal {
+                0% { opacity: 0; transform: scale(0.95); }
+                100% { opacity: 1; transform: scale(1); }
+              }
+            `}</style>
+            </div>
+         
+        )}
+        {/* {mobileNavOpen && (
+          <div className="fixed inset-0 z-[9999] bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="relative w-full max-w-sm mx-auto bg-white rounded-2xl shadow-2xl px-6 py-8 flex flex-col gap-6 animate-fade-in" style={{margin: '0 16px'}}>
+              <button
+                onClick={() => setMobileNavOpen(false)}
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-900"
+                aria-label="Close menu"
+              >
+                <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+              </button>
+              <div className="flex flex-col gap-4 mt-[100%]">
+                <button
+                  onClick={() => { copyCardUrl(); setMobileNavOpen(false); }}
+                  className="inline-flex items-center gap-2 px-5 py-4 text-base bg-purple-50 text-purple-500 rounded-xl hover:bg-purple-500 hover:text-white transition-colors font-semibold shadow"
+                >
+                  {copied ? (
+                    <Check className="w-5 h-5" />
+                  ) : (
+                    <Copy className="w-5 h-5" />
+                  )}
+                  {copied ? "Copied!" : "Copy URL"}
+                </button>
+                <button
+                  onClick={async () => {
+                    await handleSave();
+                    setShowConfetti(true);
+                    setShowCongrats(true);
+                    setMobileNavOpen(false);
+                  }}
+                  disabled={saving}
+                  className="inline-flex items-center gap-2 px-5 py-4 text-base disabled:opacity-50 disabled:cursor-not-allowed bg-yellow-50 text-yellow-500 rounded-xl font-semibold hover:bg-yellow-500 hover:text-white transition-colors border-2 border-yellow-500 shadow"
+                >
+                  {saving ? (
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Save className="w-5 h-5" />
+                  )}
+                  {saving ? "Saving..." : "Save Changes"}
+                </button>
+                <button
+                  onClick={async () => { await handleSignOut(); setMobileNavOpen(false); }}
+                  className="inline-flex items-center gap-2 px-5 py-4 text-base text-gray-600 hover:text-gray-900 transition-colors border-2 border-gray-300 rounded-xl font-semibold shadow"
+                >
+                  <LogOut className="w-5 h-5" />
+                  Sign Out
+                </button>
+              </div>
+            </div>
+            <style>{`
+              .animate-fade-in {
+                animation: fadeInModal 0.25s cubic-bezier(.23,1.02,.53,.97);
+              }
+              @keyframes fadeInModal {
+                0% { opacity: 0; transform: scale(0.95); }
+                100% { opacity: 1; transform: scale(1); }
+              }
+            `}</style>
+          </div>
+        )} */}
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -678,17 +919,20 @@ export const AdminPanel: React.FC = () => {
               <div className="p-6">
                 {/* Basic Info Tab */}
                 {activeTab === "basic" && (
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-6">
-                      <ImageUpload
-                        currentImageUrl={formData.avatar_url}
-                        onImageChange={(url) =>
-                          setFormData({ ...formData, avatar_url: url || "" })
-                        }
-                        userId={user?.id || ""}
-                      />
-                      <div className="flex-1 space-y-4">
-                        <div>
+                  <div className="space-y-6 relative">
+                    <div className="flex flex-col sm:flex-row items-center gap-1">
+                      <div className="flex-shrink-0 flex justify-center items-center w-full sm:w-auto mb-4 sm:mb-0">
+                        <ImageUpload
+                          currentImageUrl={formData.avatar_url}
+                          onImageChange={(url) =>
+                            setFormData({ ...formData, avatar_url: url || "" })
+                          }
+                          userId={user?.id || ""}
+                          className="mx-auto"
+                        />
+                      </div>
+                      <div className="flex-1 w-full sm:w-auto space-y-4">
+                        <div className="w-full">
                           <label className="block text-sm font-medium text-gray-700 mb-1">
                             Full Name *
                           </label>
@@ -705,7 +949,7 @@ export const AdminPanel: React.FC = () => {
                             placeholder="Your full name"
                           />
                         </div>
-                        <div>
+                        <div className="w-full">
                           <label className="block text-sm font-medium text-gray-700 mb-1">
                             Card URL Username *
                           </label>
@@ -733,7 +977,7 @@ export const AdminPanel: React.FC = () => {
                             {formData.username || "yourname"}
                           </p>
                         </div>
-                        <div>
+                        <div className="w-full">
                           <label className="block text-sm font-medium text-gray-700 mb-1">
                             Global Username (for social links)
                           </label>
@@ -810,32 +1054,55 @@ export const AdminPanel: React.FC = () => {
                       />
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        id="is_published"
-                        checked={formData.is_published}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            is_published: e.target.checked,
-                          })
-                        }
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                      />
-                      <label
-                        htmlFor="is_published"
-                        className="text-sm font-medium text-gray-700"
+                    <div className="flex items-center gap-3 justify-between">
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          id="is_published"
+                          checked={formData.is_published}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              is_published: e.target.checked,
+                            })
+                          }
+                          className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <span
+                          className={`inline-block w-3 h-3 rounded-full ${
+                            formData.is_published
+                              ? "bg-green-500"
+                              : "bg-red-500"
+                          }`}
+                        />
+                        <label
+                          htmlFor="is_published"
+                          className="text-sm font-medium text-gray-700"
+                        >
+                          Publish card (make it publicly accessible)
+                        </label>
+                      </div>
+                    </div>
+                    {/* Next button moved to bottom right */}
+                    <div className="flex justify-end mt-10">
+                      <button
+                        type="button"
+                        className="px-10 py-2 flex items-center gap-2 bg-yellow-50 text-yellow-500 rounded-lg font-medium hover:bg-yellow-500 hover:text-white transition-colors text-sm border-2 border-yellow-500"
+                        onClick={async () => {
+                          await handleSave();
+                          setActiveTab("contact");
+                        }}
                       >
-                        Publish card (make it publicly accessible)
-                      </label>
+                        Next
+                        <ArrowBigRight className="w-5 h-5" />
+                      </button>
                     </div>
                   </div>
                 )}
 
                 {/* Contact Tab */}
                 {activeTab === "contact" && (
-                  <div className="space-y-4">
+                  <div className="space-y-4 relative">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -870,7 +1137,6 @@ export const AdminPanel: React.FC = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           <Globe className="w-4 h-4 inline mr-1" />
@@ -907,26 +1173,45 @@ export const AdminPanel: React.FC = () => {
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Google Maps Link
-                      </label>
-                      <input
-                        type="url"
-                        value={formData.map_link}
-                        onChange={(e) =>
-                          setFormData({ ...formData, map_link: e.target.value })
-                        }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="https://maps.google.com/..."
-                      />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Google Maps Link
+                        </label>
+                        <input
+                          type="url"
+                          value={formData.map_link}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              map_link: e.target.value,
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="https://maps.google.com/..."
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end mt-10">
+                      <button
+                        type="button"
+                        className="px-10 py-2 flex items-center gap-2 bg-yellow-50 text-yellow-500 rounded-lg font-medium hover:bg-yellow-500 hover:text-white transition-colors text-sm border-2 border-yellow-500"
+                        onClick={async () => {
+                          await handleSave();
+                          setActiveTab("social");
+                        }}
+                      >
+                        Next
+                        <ArrowBigRight className="w-5 h-5" />
+                      </button>
                     </div>
                   </div>
                 )}
 
                 {/* Social Links Tab */}
                 {activeTab === "social" && (
-                  <div className="space-y-6">
+                  <div className="space-y-6 relative">
                     {/* Global Username Info */}
                     {formData.globalUsername && (
                       <div className="bg-blue-50 rounded-lg p-4">
@@ -1023,8 +1308,12 @@ export const AdminPanel: React.FC = () => {
                           }`}
                         >
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                              <Globe className="w-5 h-5 text-gray-600" />
+                            <div className={`w-10 h-10 flex items-center justify-center rounded-lg border-2 ${link.platform === "GitHub" ? "bg-gray-200" : ""}`} style={{ background: SOCIAL_PLATFORM_COLORS[link.platform] + '22', borderColor: SOCIAL_PLATFORM_COLORS[link.platform] + '55' }}>
+                              {(() => {
+                                const Icon = getSocialIcon(link.platform);
+                                const color = SOCIAL_PLATFORM_COLORS[link.platform] || '#333';
+                                return <Icon className="w-5 h-5" color={color} />;
+                              })()}
                             </div>
                             <div>
                               <div className="flex items-center gap-2">
@@ -1089,33 +1378,129 @@ export const AdminPanel: React.FC = () => {
                         )}
                       </div>
                     )}
+                    <div className="flex justify-end mt-10">
+                      <button
+                        type="button"
+                        className="px-10 py-2 flex items-center gap-2 bg-yellow-50 text-yellow-500 rounded-lg font-medium hover:bg-yellow-500 hover:text-white transition-colors text-sm border-2 border-yellow-500"
+                        onClick={async () => {
+                          await handleSave();
+                          setActiveTab("media");
+                        }}
+                      >
+                        Next
+                        <ArrowBigRight className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
                 )}
 
                 {/* Media Tab */}
                 {activeTab === "media" && businessCard && (
-                  <MediaUpload
-                    cardId={businessCard.id}
-                    mediaItems={mediaItems}
-                    onMediaChange={setMediaItems}
-                    userId={user?.id || ""}
-                  />
+                  <div className="relative">
+                    <MediaUpload
+                      cardId={businessCard.id}
+                      mediaItems={mediaItems}
+                      onMediaChange={setMediaItems}
+                      userId={user?.id || ""}
+                    />
+                    <div className="flex justify-end mt-10">
+                      <button
+                        type="button"
+                        className="px-10 py-2 flex items-center gap-2 bg-yellow-50 text-yellow-500 rounded-lg font-medium hover:bg-yellow-500 hover:text-white transition-colors text-sm border-2 border-yellow-500"
+                        onClick={async () => {
+                          await handleSave();
+                          setActiveTab("reviews");
+                        }}
+                      >
+                        Next
+                        <ArrowBigRight className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
                 )}
 
                 {/* Reviews Tab */}
                 {activeTab === "reviews" && businessCard && (
-                  <ReviewsManager
-                    cardId={businessCard.id}
-                    reviews={reviews}
-                    onReviewsChange={setReviews}
-                  />
+                  <div className="relative">
+                    <ReviewsManager
+                      cardId={businessCard.id}
+                      reviews={reviews}
+                      onReviewsChange={setReviews}
+                    />
+                    <div className="flex justify-end mt-10">
+                      <button
+                        type="button"
+                        className="px-10 py-2 flex items-center gap-2 bg-yellow-50 text-yellow-500 rounded-lg font-medium hover:bg-yellow-500 hover:text-white transition-colors text-sm border-2 border-yellow-500"
+                        onClick={async () => {
+                          await handleSave();
+                          setActiveTab("design");
+                        }}
+                      >
+                        Next
+                        <ArrowBigRight className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
                 )}
 
                 {/* Design Tab */}
                 {activeTab === "design" && (
-                  <div className="space-y-6">
+                  <div className="space-y-6 flex flex-col relative min-h-[60vh]">
+                    {/* Confetti Canvas */}
+                    {/* Confetti Canvas - overlay, does not affect layout */}
+                    {showConfetti && (
+                      <div style={{ position: 'fixed', inset: 0, zIndex: 9999, pointerEvents: 'none' }}>
+                        <ConfettiAnimation />
+                      </div>
+                    )}
+                    {/* Congratulatory Message */}
+                    {showCongrats && (
+                      <div 
+                        className="fixed top-1/2 left-1/2 z-50 bg-white bg-opacity-95 rounded-2xl shadow-2xl px-10 py-8 flex flex-col items-center justify-center animate-congrats-fade-in"
+                        style={{ transform: 'translate(-50%, -50%)', minWidth: 320, boxShadow: '0 8px 32px rgba(0,0,0,0.18)' }}
+                      >
+                        <span className="text-6xl mb-3 animate-bounce-emoji" style={{ display: 'inline-block' }}>🎉</span>
+                        <span className="text-2xl font-extrabold text-gradient bg-gradient-to-r from-pink-500 via-blue-500 to-green-400 bg-clip-text text-transparent mb-2 animate-congrats-scale">Congratulations!</span>
+                        <span className="text-lg text-gray-700 font-medium animate-congrats-fade">You successfully built your card.</span>
+                        <style>{`
+                          @keyframes congrats-fade-in {
+                            0% { opacity: 0; transform: scale(0.8) translate(-50%, -50%); }
+                            60% { opacity: 1; transform: scale(1.05) translate(-50%, -50%); }
+                            100% { opacity: 1; transform: scale(1) translate(-50%, -50%); }
+                          }
+                          .animate-congrats-fade-in {
+                            animation: congrats-fade-in 0.8s cubic-bezier(.23,1.02,.53,.97);
+                          }
+                          @keyframes bounce-emoji {
+                            0%, 100% { transform: translateY(0); }
+                            20% { transform: translateY(-18px); }
+                            40% { transform: translateY(0); }
+                            60% { transform: translateY(-10px); }
+                            80% { transform: translateY(0); }
+                          }
+                          .animate-bounce-emoji {
+                            animation: bounce-emoji 1.2s;
+                          }
+                          @keyframes congrats-scale {
+                            0% { opacity: 0; transform: scale(0.7); }
+                            60% { opacity: 1; transform: scale(1.1); }
+                            100% { opacity: 1; transform: scale(1); }
+                          }
+                          .animate-congrats-scale {
+                            animation: congrats-scale 0.7s cubic-bezier(.23,1.02,.53,.97);
+                          }
+                          @keyframes congrats-fade {
+                            0% { opacity: 0; }
+                            100% { opacity: 1; }
+                          }
+                          .animate-congrats-fade {
+                            animation: congrats-fade 1.2s;
+                          }
+                        `}</style>
+                      </div>
+                    )}
                     {/* Theme Selection */}
-                    <div>
+                    <div className="w-full max-w-2xl mx-auto">
                       <h3 className="text-lg font-medium text-gray-900 mb-4">
                         Choose Theme
                       </h3>
@@ -1124,32 +1509,31 @@ export const AdminPanel: React.FC = () => {
                           <button
                             key={theme.name}
                             onClick={() => setFormData({ ...formData, theme })}
-                            className={`p-4 rounded-lg border-2 transition-all ${
+                            className={`p-4 rounded-lg border-2 transition-all flex items-center justify-between w-full ${
                               formData.theme.name === theme.name
                                 ? "border-blue-500 ring-2 ring-blue-200"
                                 : "border-gray-200 hover:border-gray-300"
                             }`}
                           >
-                            <div className="flex items-center gap-3 mb-2">
+                            <div className="flex items-center gap-2">
                               <div
-                                className="w-6 h-6 rounded-full"
+                                className="w-7 h-6 rounded-full"
                                 style={{ backgroundColor: theme.primary }}
                               />
                               <div
-                                className="w-6 h-6 rounded-full"
+                                className="w-7 h-6 rounded-full"
                                 style={{ backgroundColor: theme.secondary }}
                               />
                             </div>
-                            <div className="text-sm font-medium text-gray-900">
+                            <div className="text-sm font-medium text-gray-900 ml-4 text-right">
                               {theme.name}
                             </div>
                           </button>
                         ))}
                       </div>
                     </div>
-
                     {/* Card Shape */}
-                    <div>
+                    <div className="w-full max-w-2xl mx-auto">
                       <h3 className="text-lg font-medium text-gray-900 mb-4">
                         Card Shape
                       </h3>
@@ -1177,9 +1561,8 @@ export const AdminPanel: React.FC = () => {
                         ))}
                       </div>
                     </div>
-
                     {/* Layout Options */}
-                    <div>
+                    <div className="w-full max-w-2xl mx-auto">
                       <h3 className="text-lg font-medium text-gray-900 mb-4">
                         Layout Style
                       </h3>
@@ -1214,9 +1597,8 @@ export const AdminPanel: React.FC = () => {
                         ))}
                       </div>
                     </div>
-
                     {/* Text Alignment */}
-                    <div>
+                    <div className="w-full max-w-2xl mx-auto">
                       <h3 className="text-lg font-medium text-gray-900 mb-4">
                         Text Alignment
                       </h3>
@@ -1250,9 +1632,8 @@ export const AdminPanel: React.FC = () => {
                         ))}
                       </div>
                     </div>
-
                     {/* Font Selection */}
-                    <div>
+                    <div className="w-full max-w-2xl mx-auto">
                       <h3 className="text-lg font-medium text-gray-900 mb-4">
                         Font Family
                       </h3>
@@ -1290,6 +1671,40 @@ export const AdminPanel: React.FC = () => {
                         ))}
                       </div>
                     </div>
+                    <div className="flex justify-end mt-10">
+                      <button
+                        type="button"
+                        className="px-4 py-2 flex items-center gap-2 bg-yellow-50 text-yellow-500 rounded-lg font-medium hover:bg-yellow-500 hover:text-white transition-colors text-sm border-2 border-yellow-500"
+                        onClick={async () => {
+                          await handleSave();
+                          setShowConfetti(true);
+                          setShowCongrats(true);
+                        }}
+                      >
+                        {saving ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Save className="w-4 h-4" />
+                        )}
+                        {saving ? "Saving..." : "Save Changes"}
+                      </button>
+                    </div>
+                    {/* Fixed Save Button */}
+                    {/* <div className="fixed bottom-0 left-0 w-full flex justify-center z-40 pointer-events-none">
+                      <div className="w-full max-w-xl px-4 py-6 flex justify-center pointer-events-auto">
+                        <button
+                          type="button"
+                          className="px-10 py-3 rounded-full font-bold text-lg text-white bg-gradient-to-r from-pink-500 via-blue-500 to-green-400 shadow-lg transition-all duration-200 hover:scale-105 hover:from-pink-600 hover:to-green-500 focus:outline-none focus:ring-4 focus:ring-blue-200"
+                          onClick={async () => {
+                            await handleSave();
+                            setShowConfetti(true);
+                            setShowCongrats(true);
+                          }}
+                        >
+                          Save & Celebrate
+                        </button>
+                      </div>
+                    </div> */}
                   </div>
                 )}
               </div>
