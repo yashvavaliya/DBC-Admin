@@ -31,7 +31,7 @@ const CardIcon: React.FC<{ className?: string }> = ({ className }) => (
 );
 
 const HomePage = () => (
-  <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-r from-blue-100 via-white to-purple-100 relative px-8 md:px-0 py-20 md:py-0">
+  <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-r from-blue-100 via-white to-purple-100 relative px-8 md:px-0 py-[25%] md:py-0">
     {/* Background decoration */}
     <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
     <div className="absolute top-20 right-20 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
@@ -67,7 +67,7 @@ const HomePage = () => (
     <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-7xl gap-8 md:gap-12 relative z-10">
       {/* Left Column - Visual */}
       <div className="relative flex-1 flex items-center justify-center w-full md:w-auto">
-        <div className="relative w-full max-w-sm md:max-w-lg bg-white rounded-3xl shadow-2xl p-3 md:p-5 transform -rotate-3 hover:rotate-0 transition-transform duration-500">
+        <div className="relative w-full max-w-sm md:max-w-lg bg-white rounded-3xl shadow-2xl p-3 md:p-5 transform -rotate-6 hover:rotate-0 transition-transform duration-500">
           <div className="absolute -top-3 -left-4 md:-left-8 bg-yellow-400 text-yellow-900 px-3 md:px-4 py-2 rounded-full text-xs md:text-sm font-semibold shadow-md animate-bounce z-10">
             🚀 Stand Out Online
           </div>
@@ -75,7 +75,7 @@ const HomePage = () => (
             Digital Card ✨
           </div>
           {/* Header */}
-          <div className="text-lg md:text-xl font-bold text-center text-blue-700 mb-2 md:mb-5 tracking-wide">
+          <div className="text-base md:text-xl font-bold text-center text-blue-700 mb-2 md:mb-5 tracking-wide">
             Digital Business Cards
           </div>
           {/* Mock Digital Business Card */}

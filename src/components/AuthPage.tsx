@@ -57,7 +57,7 @@ export const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center p-2 md:p-4 w-full">
+    <div className="min-h-[50vh] md:min-h-[60vh] flex items-center justify-center p-0 md:p-4 w-full">
       <div className="w-full max-w-xs md:max-w-md">
         {/* Header */}
   <div className="text-center mb-6 md:mb-8">
@@ -90,7 +90,7 @@ export const AuthPage: React.FC = () => {
                   : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
               }`}
             >
-              Sign In
+              ign In
             </button>
             <button
               onClick={() => {
